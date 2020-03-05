@@ -27,7 +27,6 @@ static int poll_callback(unsigned int num_lines, struct gpiod_ctxless_event_poll
 }
 
 static int event_callback(int event_type, unsigned int line_offset, const struct timespec *timestamp, void *data) {
-  static int count =0;
   int ret = 0;
 
   switch (event_type) {
