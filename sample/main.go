@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/wancom/libgpiodgo"
+	"github.com/wancom/gogpiod"
 )
 
 func main() {
 	gpio := []int{5, 6}
-	ich := libgpiodgo.SetupWatchGPIO(gpio)
+	ich := gogpiod.SetupWatchGPIO(gpio)
 	go func() {
 		time.Sleep(10 * time.Second)
-		ich = libgpiodgo.SetupWatchGPIO(gpio)
+		ich = gogpiod.SetupWatchGPIO(gpio)
 	}()
 	for {
 		select {
