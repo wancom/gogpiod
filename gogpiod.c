@@ -1,4 +1,4 @@
-#include "gpiodgo.h"
+#include "gogpiod.h"
 #include "_cgo_export.h"
 
 static int poll_callback(unsigned int num_lines, struct gpiod_ctxless_event_poll_fd *fds, const struct timespec *timeout, void *data) {

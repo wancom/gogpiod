@@ -2,7 +2,7 @@ package gogpiod
 
 // #cgo LDFLAGS: -lgpiod
 /*
-#include "gpiodgo.h"
+#include "gogpiod.h"
 */
 import "C"
 import (
