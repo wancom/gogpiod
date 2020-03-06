@@ -1,4 +1,4 @@
-package libgpiodgo
+package gogpiod
 
 // #cgo LDFLAGS: -lgpiod
 /*
