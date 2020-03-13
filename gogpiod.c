@@ -1,6 +1,9 @@
 #include "gogpiod.h"
 #include "_cgo_export.h"
 
+char *dev="";
+char *appname="gpiod";
+
 static int poll_callback(unsigned int num_lines, struct gpiod_ctxless_event_poll_fd *fds, const struct timespec *timeout, void *data) {
 	struct pollfd pfds[GPIOD_LINE_BULK_MAX_LINES + 1];
 	int cnt;
@@ -44,5 +47,10 @@ static int event_callback(int event_type, unsigned int line_offset, const struct
 }
 int watchGPIO(unsigned int *gpio,int cnt){
 	struct timespec timeout = { 1, 0 };
-  return gpiod_ctxless_event_monitor_multiple("", GPIOD_CTXLESS_EVENT_BOTH_EDGES, gpio, cnt, false, "gpiodtest", &timeout, poll_callback, event_callback, NULL);
+  return gpiod_ctxless_event_monitor_multiple(dev, GPIOD_CTXLESS_EVENT_BOTH_EDGES, gpio, cnt, false, appname, &timeout, poll_callback, event_callback, NULL);
+}
+
+int setupGPIOD(char *device, char *app){
+	dev=device;
+	appname=app;
 }

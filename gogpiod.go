@@ -18,6 +18,10 @@ type GPIOEventInfo struct {
 var intch chan GPIOEventInfo
 var stopch = make(chan int)
 
+func SetupGPIOD(device, appName string) {
+	C.setupGPIOD(C.CString(device), C.CString(appName))
+}
+
 func SetupWatchGPIO(gpio []int) chan GPIOEventInfo {
 	if intch != nil {
 		stopch <- 1

@@ -9,6 +9,7 @@ import (
 
 func main() {
 	gpio := []int{5, 6}
+	gogpiod.SetupGPIOD("", "TestApp")
 	ich := gogpiod.SetupWatchGPIO(gpio)
 	go func() {
 		time.Sleep(10 * time.Second)
