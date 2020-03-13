@@ -58,3 +58,7 @@ int setupGPIOD(char *device, char *app){
 int getGPIO(unsigned int offset){
 	return gpiod_ctxless_get_value(dev,offset,false,appname);
 }
+
+int setGPIO(unsigned int offset,int value){
+	return gpiod_ctxless_set_value(dev,offset,value,false,appname,NULL,NULL);
+}

@@ -59,3 +59,7 @@ func GetGPIO(pin int) int {
 	return int(v)
 }
 
+func SetGPIO(pin, value int) int {
+	v := C.setGPIO(C.uint(pin), C.int(value))
+	return int(v)
+}

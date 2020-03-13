@@ -11,6 +11,7 @@ func main() {
 	gpio := []int{5, 6}
 	gogpiod.SetupGPIOD("", "TestApp")
 	println(gogpiod.GetGPIO(20))
+	gogpiod.SetGPIO(21, 1)
 	time.Sleep(5 * time.Second)
 	ich := gogpiod.SetupWatchGPIO(gpio)
 	go func() {
