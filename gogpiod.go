@@ -53,3 +53,9 @@ func checkStop() int {
 	}
 	return 0
 }
+
+func GetGPIO(pin int) int {
+	v := C.getGPIO(C.uint(pin))
+	return v
+}
+
