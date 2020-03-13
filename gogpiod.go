@@ -56,6 +56,6 @@ func checkStop() int {
 
 func GetGPIO(pin int) int {
 	v := C.getGPIO(C.uint(pin))
-	return v
+	return int(v)
 }
 
