@@ -65,10 +65,6 @@ int watchGPIO(unsigned int gpio,int cnt){
 		return -1;
 	}
 
-	if (gpiod_line_request_output(gl,appname,0)==-1){
-		return -1;
-	}
-
 	if (gpiod_line_request_both_edges_events(gl,appname)==-1){
 		return -1;
 	}
