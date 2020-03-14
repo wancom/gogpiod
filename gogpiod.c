@@ -1,8 +1,10 @@
 #include "gogpiod.h"
 #include "_cgo_export.h"
+#include <errno.h>
 
 char *dev="";
 char *appname="gpiod";
+struct gpiod_chip *gchip=NULL;
 
 static int poll_callback(unsigned int num_lines, struct gpiod_ctxless_event_poll_fd *fds, const struct timespec *timeout, void *data) {
 	struct pollfd pfds[GPIOD_LINE_BULK_MAX_LINES + 1];
@@ -50,15 +52,54 @@ int watchGPIO(unsigned int *gpio,int cnt){
   return gpiod_ctxless_event_monitor_multiple(dev, GPIOD_CTXLESS_EVENT_BOTH_EDGES, gpio, cnt, false, appname, &timeout, poll_callback, event_callback, NULL);
 }
 
-int setupGPIOD(char *device, char *app){
+int setupGPIO(char *device, char *app){
 	dev=device;
 	appname=app;
+
+  if ((gchip=gpiod_chip_open_lookup(dev)) == NULL) {
+    return 1;
+  }
+	return 0;
+}
+
+void closeGPIO(){
+	if (gchip != NULL)gpiod_chip_close(gchip);
 }
 
 int getGPIO(unsigned int offset){
-	return gpiod_ctxless_get_value(dev,offset,false,appname);
+	struct gpiod_line *gl;
+
+	if (gchip == NULL){
+		errno=EBADF;
+		return -1;
+	}
+
+	if ((gl=gpiod_chip_get_line(gchip,offset))==NULL){
+		return -1;
+	}
+
+	if (gpiod_line_direction(gl)!=GPIOD_DIRECTION_INPUT){
+		gpiod_line_request_input(gl,appname);
+	}
+
+	return gpiod_line_get_value(gl);
 }
 
 int setGPIO(unsigned int offset,int value){
-	return gpiod_ctxless_set_value(dev,offset,value,false,appname,NULL,NULL);
+	struct gpiod_line *gl;
+
+	if (gchip == NULL){
+		errno=EBADF;
+		return -1;
+	}
+
+	if ((gl=gpiod_chip_get_line(gchip,offset))==NULL){
+		return -1;
+	}
+
+	if (gpiod_line_direction(gl)!=GPIOD_DIRECTION_OUTPUT){
+		gpiod_line_request_output(gl,appname);
+	}
+
+	return gpiod_line_set_value(gl,value);
 }
