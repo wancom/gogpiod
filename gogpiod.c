@@ -54,7 +54,7 @@ struct gpiod_chip *gchip=NULL;
 
 int watchGPIO(unsigned int gpio,int cnt){
 	struct gpiod_line *gl;
-	int fd;
+	int fd,ret;
 
 	if (gchip == NULL){
 		errno=EBADF;
@@ -65,14 +65,15 @@ int watchGPIO(unsigned int gpio,int cnt){
 		return -1;
 	}
 
-	if (gpiod_line_direction(gl)!=GPIOD_DIRECTION_INPUT){
-		gpiod_line_request_input(gl,appname);
+	if (gpiod_line_request_output(gl,appname,0)==-1){
+		return -1;
 	}
+
 	if (gpiod_line_request_both_edges_events(gl,appname)==-1){
 		return -1;
 	}
 	if ((fd=gpiod_line_event_get_fd(gl))==-1){
-		return -1
+		return -1;
 	}
 
 	struct pollfd fds;
@@ -97,12 +98,13 @@ int watchGPIO(unsigned int gpio,int cnt){
 
 			switch (ge.event_type) {
 				case GPIOD_LINE_EVENT_RISING_EDGE:
-					ret = intGPIO(line_offset, 1 ,ge.ts.tv_sec,ge.ts.tv_nsec);
+					ret = intGPIO(gpio, 1 ,ge.ts.tv_sec,ge.ts.tv_nsec);
 					break;
 				case GPIOD_LINE_EVENT_FALLING_EDGE:
-					ret = intGPIO(line_offset, 0 ,ge.ts.tv_sec,ge.ts.tv_nsec);
+					ret = intGPIO(gpio, 0 ,ge.ts.tv_sec,ge.ts.tv_nsec);
 					break;
 				default:
+				break;
 			}
 		}
 	}
@@ -136,8 +138,8 @@ int getGPIO(unsigned int offset){
 		return -1;
 	}
 
-	if (gpiod_line_direction(gl)!=GPIOD_DIRECTION_INPUT){
-		gpiod_line_request_input(gl,appname);
+	if (gpiod_line_request_input(gl,appname)==-1){
+		return -1;
 	}
 
 	return gpiod_line_get_value(gl);
@@ -155,8 +157,8 @@ int setGPIO(unsigned int offset,int value){
 		return -1;
 	}
 
-	if (gpiod_line_direction(gl)!=GPIOD_DIRECTION_OUTPUT){
-		gpiod_line_request_output(gl,appname);
+	if (gpiod_line_request_output(gl,appname,0)==-1){
+		return -1;
 	}
 
 	return gpiod_line_set_value(gl,value);

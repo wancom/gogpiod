@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	gogpiod.SetupGPIOD("", "TestApp")
+	gogpiod.SetupGPIO("", "TestApp")
 
 	println(gogpiod.GetGPIO(20))
 

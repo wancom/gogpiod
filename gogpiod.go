@@ -31,7 +31,7 @@ func SetupWatchGPIO(gpio []int) chan GPIOEventInfo {
 		cgpio[i] = C.uint(v)
 	}
 	intch = make(chan GPIOEventInfo, 100)
-	go C.watchGPIO((*C.uint)(&cgpio[0]), C.int(len(gpio)))
+	go C.watchGPIO((C.uint)(cgpio[0]), C.int(len(gpio)))
 	return intch
 }
 
