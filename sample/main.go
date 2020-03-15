@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err = gogpiod.SetupGPIO("", "TestApp")
+	err := gogpiod.SetupGPIO("", "TestApp")
 	if err != nil {
 		panic(err)
 	}
