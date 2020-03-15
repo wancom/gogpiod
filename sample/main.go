@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/wancom/gogpiod"
 )
@@ -11,10 +10,7 @@ func main() {
 	gogpiod.SetupGPIO("", "TestApp")
 
 	println(gogpiod.GetGPIO(20))
-
 	gogpiod.SetGPIO(21, 1)
-
-	time.Sleep(5 * time.Second)
 
 	gpio := []int{5, 6}
 	ich := gogpiod.SetupWatchGPIO(gpio)
