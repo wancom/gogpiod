@@ -94,7 +94,7 @@ int watchGPIO(unsigned int *gpio, int cnt) {
   if (fds == NULL) return -1;
   memset(fds, 0, sizeof(struct pollfd) * cnt);
 
-  for (i = 0; i < cnt, i++) {
+  for (i = 0; i < cnt; i++) {
     if ((gl = gpiod_chip_get_line(gchip, gpio[i])) == NULL) {
       free(fds);
       return -1;
@@ -131,7 +131,7 @@ int watchGPIO(unsigned int *gpio, int cnt) {
     } else if (ret == 0)
       continue;
 
-    for (i = 0; i < cnt, i++) {
+    for (i = 0; i < cnt; i++) {
       if (fds[i].revents) {
         if (gpiod_line_event_read_fd(fds[i].fd, &ge) == -1) {
           free(fds);
@@ -140,10 +140,10 @@ int watchGPIO(unsigned int *gpio, int cnt) {
 
         switch (ge.event_type) {
           case GPIOD_LINE_EVENT_RISING_EDGE:
-            intGPIO(gpio, 1, ge.ts.tv_sec, ge.ts.tv_nsec);
+            intGPIO(gpio[i], 1, ge.ts.tv_sec, ge.ts.tv_nsec);
             break;
           case GPIOD_LINE_EVENT_FALLING_EDGE:
-            intGPIO(gpio, 0, ge.ts.tv_sec, ge.ts.tv_nsec);
+            intGPIO(gpio[i], 0, ge.ts.tv_sec, ge.ts.tv_nsec);
             break;
           default:
             break;
