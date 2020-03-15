@@ -45,7 +45,7 @@ int watchGPIO(unsigned int gpio, int cnt) {
     ret = poll(&fds, 1, 1 * 1000);
 
     if (ret < 0) {
-      if (error == EINTR) continue;  // Ignore signal
+      if (errno == EINTR) continue;  // Ignore signal
       return -1;
     } else if (ret == 0)
       continue;
