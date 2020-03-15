@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// GPIOEventInfo holds gpio event information(Pin, Value, and timestamp)
 type GPIOEventInfo struct {
 	Pin   int
 	Value int
@@ -18,6 +19,7 @@ type GPIOEventInfo struct {
 var intch chan GPIOEventInfo
 var stopch = make(chan int)
 
+// SetupGPIO initialize GPIO and open device
 func SetupGPIO(device, appName string) error {
 	r, err := C.setupGPIO(C.CString(device), C.CString(appName))
 	if r != 0 {
@@ -26,6 +28,7 @@ func SetupGPIO(device, appName string) error {
 	return nil
 }
 
+// GetGPIO sets GPIO pin input mode and return GPIO value
 func GetGPIO(pin int) (int, error) {
 	v, err := C.getGPIO(C.uint(pin))
 	if v == -1 {
@@ -34,6 +37,7 @@ func GetGPIO(pin int) (int, error) {
 	return int(v), nil
 }
 
+// SetGPIO sets GPIO pin output mode and set GPIO value
 func SetGPIO(pin, value int) error {
 	r, err := C.setGPIO(C.uint(pin), C.int(value))
 	if r != 0 {
@@ -42,7 +46,8 @@ func SetGPIO(pin, value int) error {
 	return nil
 }
 
-func SetupWatchGPIO(gpio []int) chan GPIOEventInfo {
+// WatchGPIO watches GPIO and return event channel
+func WatchGPIO(gpio []int) chan GPIOEventInfo {
 	if intch != nil {
 		stopch <- 1
 	}

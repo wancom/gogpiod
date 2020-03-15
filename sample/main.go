@@ -24,10 +24,10 @@ func main() {
 	}
 
 	gpio := []int{5, 6}
-	ich := gogpiod.SetupWatchGPIO(gpio)
+	ich := gogpiod.WatchGPIO(gpio)
 	go func() {
 		time.Sleep(10 * time.Second)
-		ich = gogpiod.SetupWatchGPIO(gpio)
+		ich = gogpiod.WatchGPIO(gpio)
 	}()
 	for {
 		select {
