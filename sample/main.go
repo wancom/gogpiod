@@ -8,6 +8,21 @@ import (
 )
 
 func main() {
+	err := gogpiod.SetupGPIO("", "TestApp")
+	if err != nil {
+		panic(err)
+	}
+
+	v, err := gogpiod.GetGPIO(20)
+	if err != nil {
+		panic(err)
+	}
+	println(v)
+	err = gogpiod.SetGPIO(21, 1)
+	if err != nil {
+		panic(err)
+	}
+
 	gpio := []int{5, 6}
 	ich := gogpiod.SetupWatchGPIO(gpio)
 	go func() {
@@ -21,9 +36,6 @@ func main() {
 				continue
 			}
 			fmt.Printf("IntGPIO: %v: %d=%d\n", gi.Time, gi.Pin, gi.Value)
-			// default:
-			// 	println("hoge")
-			// 	time.Sleep(1 * time.Second)
 		}
 	}
 }

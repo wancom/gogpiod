@@ -18,6 +18,14 @@ type GPIOEventInfo struct {
 var intch chan GPIOEventInfo
 var stopch = make(chan int)
 
+func SetupGPIO(device, appName string) error {
+	r, err := C.setupGPIO(C.CString(device), C.CString(appName))
+	if r != 0 {
+		return err
+	}
+	return nil
+}
+
 func SetupWatchGPIO(gpio []int) chan GPIOEventInfo {
 	if intch != nil {
 		stopch <- 1
@@ -27,14 +35,15 @@ func SetupWatchGPIO(gpio []int) chan GPIOEventInfo {
 		cgpio[i] = C.uint(v)
 	}
 	intch = make(chan GPIOEventInfo, 100)
-	go C.watchGPIO((*C.uint)(&cgpio[0]), C.int(len(gpio)))
+	go func() {
+		C.watchGPIO((C.uint)(cgpio[0]), C.int(len(gpio)))
+	}()
 	return intch
 }
 
 //export intGPIO
-func intGPIO(pin int, value int, sec int64, nsec int64) int {
+func intGPIO(pin int, value int, sec int64, nsec int64) {
 	intch <- GPIOEventInfo{pin, value, time.Unix(sec, nsec)}
-	return checkStop()
 }
 
 //export checkStop
@@ -48,4 +57,20 @@ func checkStop() int {
 	default:
 	}
 	return 0
+}
+
+func GetGPIO(pin int) (int, error) {
+	v, err := C.getGPIO(C.uint(pin))
+	if v == -1 {
+		return -1, err
+	}
+	return int(v), nil
+}
+
+func SetGPIO(pin, value int) error {
+	r, err := C.setGPIO(C.uint(pin), C.int(value))
+	if r != 0 {
+		return err
+	}
+	return nil
 }
