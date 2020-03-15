@@ -2,22 +2,33 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wancom/gogpiod"
 )
 
 func main() {
-	gogpiod.SetupGPIO("", "TestApp")
+	err = gogpiod.SetupGPIO("", "TestApp")
+	if err != nil {
+		panic(err)
+	}
 
-	println(gogpiod.GetGPIO(20))
-	gogpiod.SetGPIO(21, 1)
+	v, err := gogpiod.GetGPIO(20)
+	if err != nil {
+		panic(err)
+	}
+	println(v)
+	err = gogpiod.SetGPIO(21, 1)
+	if err != nil {
+		panic(err)
+	}
 
 	gpio := []int{5, 6}
 	ich := gogpiod.SetupWatchGPIO(gpio)
-	// go func() {
-	// 	time.Sleep(10 * time.Second)
-	// 	ich = gogpiod.SetupWatchGPIO(gpio)
-	// }()
+	go func() {
+		time.Sleep(10 * time.Second)
+		ich = gogpiod.SetupWatchGPIO(gpio)
+	}()
 	for {
 		select {
 		case gi, ok := <-ich:
