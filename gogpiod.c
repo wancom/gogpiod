@@ -21,6 +21,14 @@ int watchGPIO(unsigned int gpio, int cnt) {
     return -1;
   }
 
+  if (!gpiod_line_is_free(gl)) {
+    if (!gpiod_line_is_requested(gl)) {
+      errno = EBUSY;
+      return -1;
+    }
+    gpiod_line_release(gl);
+  }
+
   if (gpiod_line_request_both_edges_events(gl, appname) == -1) {
     return -1;
   }
@@ -87,6 +95,14 @@ int getGPIO(unsigned int offset) {
     return -1;
   }
 
+  if (!gpiod_line_is_free(gl)) {
+    if (!gpiod_line_is_requested(gl)) {
+      errno = EBUSY;
+      return -1;
+    }
+    gpiod_line_release(gl);
+  }
+
   if (gpiod_line_request_input(gl, appname) == -1) {
     return -1;
   }
@@ -104,6 +120,14 @@ int setGPIO(unsigned int offset, int value) {
 
   if ((gl = gpiod_chip_get_line(gchip, offset)) == NULL) {
     return -1;
+  }
+
+  if (!gpiod_line_is_free(gl)) {
+    if (!gpiod_line_is_requested(gl)) {
+      errno = EBUSY;
+      return -1;
+    }
+    gpiod_line_release(gl);
   }
 
   if (gpiod_line_request_output(gl, appname, 0) == -1) {
