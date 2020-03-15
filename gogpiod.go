@@ -19,13 +19,18 @@ type GPIOEventInfo struct {
 var intch chan GPIOEventInfo
 var stopch = make(chan int)
 
-// SetupGPIO initialize GPIO and open device
+// SetupGPIO initialize GPIO and opens device
 func SetupGPIO(device, appName string) error {
 	r, err := C.setupGPIO(C.CString(device), C.CString(appName))
 	if r != 0 {
 		return err
 	}
 	return nil
+}
+
+// CloseGPIO closes device
+func CloseGPIO() {
+	C.closeGPIO()
 }
 
 // GetGPIO sets GPIO pin input mode and return GPIO value
