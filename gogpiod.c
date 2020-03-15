@@ -1,5 +1,6 @@
 #include "gogpiod.h"
 #include <errno.h>
+#include <string.h>
 #include "_cgo_export.h"
 
 char *dev = "";
@@ -43,9 +44,10 @@ int watchGPIO(unsigned int gpio, int cnt) {
   while (!checkStop()) {
     cnt = poll(&fds, 1, 1 * 1000);
 
-    if (cnt < 0)
+    if (cnt < 0) {
+      if (error == EINTR) continue;  // Ignore signal
       return -1;
-    else if (cnt == 0)
+    } else if (cnt == 0)
       continue;
 
     if (fds.revents) {
