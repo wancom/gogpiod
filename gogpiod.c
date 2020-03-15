@@ -42,12 +42,12 @@ int watchGPIO(unsigned int gpio, int cnt) {
   fds.events = POLLIN | POLLPRI;
 
   while (!checkStop()) {
-    cnt = poll(&fds, 1, 1 * 1000);
+    ret = poll(&fds, 1, 1 * 1000);
 
-    if (cnt < 0) {
+    if (ret < 0) {
       if (error == EINTR) continue;  // Ignore signal
       return -1;
-    } else if (cnt == 0)
+    } else if (ret == 0)
       continue;
 
     if (fds.revents) {
@@ -57,10 +57,10 @@ int watchGPIO(unsigned int gpio, int cnt) {
 
       switch (ge.event_type) {
         case GPIOD_LINE_EVENT_RISING_EDGE:
-          ret = intGPIO(gpio, 1, ge.ts.tv_sec, ge.ts.tv_nsec);
+          intGPIO(gpio, 1, ge.ts.tv_sec, ge.ts.tv_nsec);
           break;
         case GPIOD_LINE_EVENT_FALLING_EDGE:
-          ret = intGPIO(gpio, 0, ge.ts.tv_sec, ge.ts.tv_nsec);
+          intGPIO(gpio, 0, ge.ts.tv_sec, ge.ts.tv_nsec);
           break;
         default:
           break;
@@ -76,7 +76,7 @@ int setupGPIO(char *device, char *app) {
   appname = app;
 
   if ((gchip = gpiod_chip_open_lookup(dev)) == NULL) {
-    return 1;
+    return -1;
   }
   return 0;
 }
