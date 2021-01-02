@@ -1,7 +1,11 @@
 package gogpiod
 
+// #cgo LDFLAGS: -lgpiod
+/*
+#include "gogpiod.h"
+*/
+import "C"
 import (
-	"fmt"
 	"time"
 )
 
@@ -17,31 +21,49 @@ var stopch = make(chan int)
 
 // SetupGPIO initialize GPIO and opens device
 func SetupGPIO(device, appName string) error {
-	fmt.Printf("SetupGPIO: device=%s, appName=%s\n", device, appName)
+	r, err := C.setupGPIO(C.CString(device), C.CString(appName))
+	if r != 0 {
+		return err
+	}
 	return nil
 }
 
 // CloseGPIO closes device
 func CloseGPIO() {
-	fmt.Printf("CloseGPIO\n")
+	C.closeGPIO()
 }
 
 // GetGPIO sets GPIO pin input mode and return GPIO value
 func GetGPIO(pin int) (int, error) {
-	fmt.Printf("GetGPIO: pin=%d\n", pin)
-	return 0, nil
+	v, err := C.getGPIO(C.uint(pin))
+	if v == -1 {
+		return -1, err
+	}
+	return int(v), nil
 }
 
 // SetGPIO sets GPIO pin output mode and set GPIO value
 func SetGPIO(pin, value int) error {
-	fmt.Printf("SetGPIO: pin=%d, value=%d\n", pin, value)
+	r, err := C.setGPIO(C.uint(pin), C.int(value))
+	if r != 0 {
+		return err
+	}
 	return nil
 }
 
 // WatchGPIO watches GPIO and return event channel
 func WatchGPIO(gpio []int) chan GPIOEventInfo {
-	fmt.Printf("WatchGPIO: gpio=%v\n", gpio)
+	if intch != nil {
+		stopch <- 1
+	}
+	cgpio := make([]C.uint, len(gpio))
+	for i, v := range gpio {
+		cgpio[i] = C.uint(v)
+	}
 	intch = make(chan GPIOEventInfo, 100)
+	go func() {
+		C.watchGPIO((*C.uint)(&cgpio[0]), C.int(len(gpio)))
+	}()
 	return intch
 }
 
